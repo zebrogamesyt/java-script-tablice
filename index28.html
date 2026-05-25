@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Operacje na tablicach w JavaScript</title>
+</head>
+<body>
+
+    <h2>Część 1: Operacje na trzech tablicach (tab1, tab2, tab3)</h2>
+    <div id="czesc1"></div>
+
+    <hr>
+
+    <h2>Część 2: Analiza danych, statystyka i sortowanie</h2>
+    <p>Wprowadź liczby oddzielone przecinkami (np. 7,3,1,6,9,5,4,10,2,2,3,3):</p>
+    <input type="text" id="liczbyUzytkownika" value="7,3,1,6,9,5,4,10,2,2,3,3">
+    <button onclick="analizujTabliceUzytkownika()">Uruchom analizę</button>
+    <div id="czesc2"></div>
+
+    <hr>
+
+    <h2>Część 3: Tablice znakowe i operacje na tekstach</h2>
+    <p>Wprowadź wyraz (dokładnie 10 liter, np. ProGramIsTa):</p>
+    <input type="text" id="tekstUzytkownika" maxlength="10" value="ProGramIsTa">
+    <button onclick="operacjeNaTekscie()">Uruchom operacje na tekście</button>
+    <div id="czesc3"></div>
+
+    <hr>
+
+    <h2>Część 4: Zaawansowane operacje na tablicy 100-elementowej</h2>
+    <p>Podaj liczbę "a" do znalezienia najbliższej wartości:</p>
+    <input type="number" id="liczbaA" value="15">
+    <button onclick="generujIAnalizuj100()">Generuj i analizuj 100 elementów</button>
+    <div id="czesc4"></div>
+
+    <hr>
+
+    <h2>Część 5: Wypełnianie tablicy 100-elementowej ciągami</h2>
+    <button onclick="generujCiagi()">Wygeneruj ciągi</button>
+    <div id="czesc5"></div>
+
+    <script>
+        let tab1 = [7, 3, 1, 6, 9, 5, 4, 10, 2, 2];
+        let c1Div = document.getElementById("czesc1");
+        
+        c1Div.innerHTML += "<p>Zawartość 5. komórki (indeks 4): " + tab1[4] + "</p>";
+        
+        tab1[6] = 12;
+        c1Div.innerHTML += "<p>tab1 po zmianie 7. komórki: [" + tab1.join(", ") + "]</p>";
+        
+        let tab2 = [];
+        for (let i = 0; i < tab1.length; i++) {
+            tab2[i] = tab1[i];
+        }
+
+        let tab3 = [];
+        for (let i = 0; i < tab1.length; i++) {
+            tab3[i] = tab1[i] + tab2[i];
+        }
+        c1Div.innerHTML += "<p>tab3 (tab1 + tab2): [" + tab3.join(", ") + "]</p>";
+        
+        for (let i = 0; i < tab1.length; i++) {
+            tab2[i] = tab1[tab1.length - 1 - i];
+        }
+        c1Div.innerHTML += "<p>tab2 w odwrotnej kolejności do tab1: [" + tab2.join(", ") + "]</p>";
+
+
+        function analizujTabliceUzytkownika() {
+            let wejscie = document.getElementById("liczbyUzytkownika").value;
+            let tab = wejscie.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num));
+            
+            if(tab.length === 0) {
+                alert("Podaj poprawne liczby!");
+                return;
+            }
+
+            let div = document.getElementById("czesc2");
+            div.innerHTML = "";
+
+            let min = tab[0];
+            let max = tab[0];
+            let suma = 0;
+            let iloscTrzy = 0;
+            let parzyste = 0;
+            let nieparzyste = 0;
+            let podzielnePrzezTrzy = 0;
+
+            for (let i = 0; i < tab.length; i++) {
+                if (tab[i] < min) min = tab[i];
+                if (tab[i] > max) max = tab[i];
+                suma += tab[i];
+                if (tab[i] === 3) iloscTrzy++;
+                if (tab[i] % 2 === 0) parzyste++; else nieparzyste++;
+                if (tab[i] % 3 === 0) podzielnePrzezTrzy++;
+            }
+            let srednia = suma / tab.length;
+
+            div.innerHTML += "<p>Najmniejszy element: " + min + "</p>";
+            div.innerHTML += "<p>Największy element: " + max + "</p>";
+            div.innerHTML += "<p>Średnia wartość: " + srednia.toFixed(2) + "</p>";
+            div.innerHTML += "<p>Ilość wystąpień cyfry 3: " + iloscTrzy + "</p>";
+            div.innerHTML += "<p>Liczby parzyste: " + parzyste + ", nieparzyste: " + nieparzyste + "</p>";
+            div.innerHTML += "<p>Liczby podzielne przez 3: " + podzielnePrzezTrzy + "</p>";
+
+            let tabPosortowana = [...tab].sort((a, b) => a - b);
+            div.innerHTML += "<p>Posortowana rosnąco: [" + tabPosortowana.join(", ") + "]</p>";
+
+            let mediana;
+            let polowa = Math.floor(tabPosortowana.length / 2);
+            if (tabPosortowana.length % 2 !== 0) {
+                mediana = tabPosortowana[polowa];
+            } else {
+                mediana = (tabPosortowana[polowa - 1] + tabPosortowana[polowa]) / 2;
+            }
+            div.innerHTML += "<p>Mediana: " + mediana + "</p>";
+
+            let trzyNajmniejsze = tabPosortowana.slice(0, 3);
+            let trzyNajwieksze = tabPosortowana.slice(-3).reverse();
+            div.innerHTML += "<p>3 najmniejsze elementy: " + trzyNajmniejsze.join(", ") + "</p>";
+            div.innerHTML += "<p>3 największe elementy: " + trzyNajwieksze.join(", ") + "</p>";
+
+            let tabKwadraty = tab.map(x => x * x);
+            div.innerHTML += "<p>Elementy podniesione do kwadratu: [" + tabKwadraty.join(", ") + "]</p>";
+        }
+
+
+        function operacjeNaTekscie() {
+            let wyraz = document.getElementById("tekstUzytkownika").value;
+            if(wyraz.length !== 10) {
+                alert("Wyraz musi mieć dokładnie 10 liter!");
+                return;
+            }
+
+            let tabZnaków = wyraz.split('');
+            let div = document.getElementById("czesc3");
+            div.innerHTML = "<p>Wprowadzona tablica znaków: [" + tabZnaków.join(", ") + "]</p>";
+
+            let tabZamieniona = tabZnaków.map(c => {
+                if (c === c.toUpperCase()) return c.toLowerCase();
+                return c.toUpperCase();
+            });
+            div.innerHTML += "<p>Po zamianie wielkości liter: [" + tabZamieniona.join(", ") + "]</p>";
+
+            let tabLosowa = [...tabZnaków];
+            for (let i = tabLosowa.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                let temp = tabLosowa[i];
+                tabLosowa[i] = tabLosowa[j];
+                tabLosowa[j] = temp;
+            }
+            div.innerHTML += "<p>W losowej kolejności: [" + tabLosowa.join(", ") + "]</p>";
+        }
+
+
+        function generujIAnalizuj100() {
+            let a = parseInt(document.getElementById("liczbaA").value);
+            if (isNaN(a)) { alert("Podaj poprawną liczbę a!"); return; }
+
+            let A = [];
+            for (let i = 0; i < 100; i++) {
+                A.push(Math.floor(Math.random() * 50) + 1);
+            }
+
+            let div = document.getElementById("czesc4");
+            div.innerHTML = "<p>Wygenerowana tablica A (pierwsze 20 elementów): [" + A.slice(0, 20).join(", ") + "...]</p>";
+
+            let max = Math.max(...A);
+            let ileMax = A.filter(x => x === max).length;
+            div.innerHTML += "<p>Największa liczba: " + max + " (występuje " + ileMax + " razy)</p>";
+
+            let nieparzysteLiczby = A.filter(x => x % 2 !== 0);
+            div.innerHTML += "<p>Liczby nieparzyste (fragment): [" + nieparzysteLiczby.slice(0, 15).join(", ") + "...]</p>";
+
+            let nieparzysteIndeksy = [];
+            for (let i = 1; i < A.length; i += 2) {
+                nieparzysteIndeksy.push(A[i]);
+            }
+            div.innerHTML += "<p>Liczby na nieparzystych indeksach (fragment): [" + nieparzysteIndeksy.slice(0, 15).join(", ") + "...]</p>";
+
+            let przedzial = A.filter(x => x >= 5 && x < 15);
+            div.innerHTML += "<p>Liczby z przedziału &lt;5, 15) (Ilość: " + przedzial.length + "): [" + przedzial.join(", ") + "]</p>";
+
+            let najblizszy = A.reduce((prev, curr) => Math.abs(curr - a) < Math.abs(prev - a) ? curr : prev);
+            div.innerHTML += "<p>Element najbliższy liczbie " + a + ": " + najblizszy + "</p>";
+
+            let minVal = Math.min(...A);
+            let minIdx = A.indexOf(minVal);
+            let poprzednik = minIdx > 0 ? A[minIdx - 1] : "brak (indeks 0)";
+            let nastepnik = minIdx < A.length - 1 ? A[minIdx + 1] : "brak (koniec tablicy)";
+            div.innerHTML += "<p>Najmniejsza wartość (" + minVal + ") pod indeksem " + minIdx + ". Poprzednik: " + poprzednik + ", Następnik: " + nastepnik + "</p>";
+
+            let wiekszeNiz10 = A.filter(x => x > 10);
+            div.innerHTML += "<p>Nowa tablica (elementy &gt; 10, rozmiar " + wiekszeNiz10.length + "): [" + wiekszeNiz10.slice(0,10).join(", ") + "...]</p>";
+
+            let B = [];
+            let obecnaSuma = 0;
+            for (let i = 0; i < A.length; i++) {
+                obecnaSuma += A[i];
+                B.push(obecnaSuma);
+            }
+            div.innerHTML += "<p>Tablica B (sumy skumulowane - fragment): [" + B.slice(0, 5).join(", ") + "... ]</p>";
+
+            let malejaco = [...A].sort((x, y) => y - x);
+            div.innerHTML += "<p>Tablica posortowana malejąco (fragment): [" + malejaco.slice(0, 15).join(", ") + "...]</p>";
+
+            let czestosc = {};
+            A.forEach(x => czestosc[x] = (czestosc[x] || 0) + 1);
+            let min3Razy = Object.keys(czestosc).filter(key => czestosc[key] >= 3);
+            div.innerHTML += "<p>Elementy występujące co najmniej 3 razy: [" + min3Razy.join(", ") + "]</p>";
+        }
+
+
+        function generujCiagi() {
+            let div = document.getElementById("czesc5");
+            div.innerHTML = "";
+
+            let fib = [0n, 1n];
+            for (let i = 2; i < 100; i++) {
+                fib[i] = fib[i - 1] + fib[i - 2];
+            }
+            div.innerHTML += "<p><b>Ciąg Fibonacciego (początek):</b> [" + fib.slice(0, 6).join(", ") + "...]</p>";
+
+            let potegi2 = [];
+            for (let i = 0; i < 100; i++) {
+                potegi2.push((2n ** BigInt(i)).toString());
+            }
+            div.innerHTML += "<p><b>Kolejne potęgi 2 (początek):</b> [" + potegi2.slice(0, 6).join(", ") + "...]</p>";
+
+            let ciagTrzy = [];
+            for (let i = 1; i <= 100; i++) {
+                ciagTrzy.push(i * 3);
+            }
+            div.innerHTML += "<p><b>Ciąg 3, 6, 9... :</b> [" + ciagTrzy.slice(0, 10).join(", ") + "...]</p>";
+
+            let ciagDwa = [];
+            for (let i = 1; i <= 100; i++) {
+                ciagDwa.push((2n ** BigInt(i)).toString());
+            }
+            div.innerHTML += "<p><b>Ciąg 2, 4, 8... :</b> [" + ciagDwa.slice(0, 6).join(", ") + "...]</p>";
+        }
+    </script>
+
+</body>
+</html>
